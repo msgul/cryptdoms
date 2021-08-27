@@ -4,78 +4,80 @@ pragma solidity >=0.4.22 <0.9.0;
 contract Cryptdom {
 
     struct kingdom{
-        string kingdom_name;
+        string kingdomName;
         uint8 r;
         uint8 g;
         uint8 b;
-        uint8 is_created;
+        uint8 isCreated;
     }
 
     address owner;
-    uint8 constant land_size = 10;
+    uint8 constant landSize = 10;
     
-    address[land_size ** 2] ownedBy;
-    mapping (address => kingdom) owner_kingdom;
-    uint rand_nonce = 0;
+    address[landSize ** 2] ownedBy;
+    mapping (address => kingdom) ownerToKingdom;
+    uint randNonce = 0;
 
     constructor() {
         owner = msg.sender;
     }
 
-    modifier is_owner(){
+    modifier isOwner(){
         require(owner == msg.sender);
         _;
     }
 
-    modifier land_owner(uint8 land_id) {
-        require(ownedBy[land_id] == msg.sender, "This land does not belong to you!");
+    modifier landOwner(uint8 landId) {
+        require(ownedBy[landId] == msg.sender, "This land does not belong to you!");
         _;
     }
 
-    function rand_mod(uint modulus) internal returns(uint) {
-        rand_nonce += 1;
-        return uint(keccak256(abi.encodePacked(block.timestamp, msg.sender, rand_nonce))) % modulus;
+    function randMod(uint modulus) internal returns(uint) {
+        randNonce += 1;
+        return uint(keccak256(abi.encodePacked(block.timestamp, msg.sender, randNonce))) % modulus;
     }
 
-    function is_neighbour(uint8 p1, uint8 p2) pure internal returns(bool) {
-        if(p1 == p2 + 1 && p1 % land_size != 0)
+    function _isNeighbour(uint8 p1, uint8 p2) pure internal returns(bool) {
+        if(p1 == p2 + 1 && p1 % landSize != 0)
             return true;
-        if(p1 == p2 - 1 && p2 % land_size != 0)
+        if(p1 == p2 - 1 && p2 % landSize != 0)
             return true;
-        if(p1 == p2 - land_size || p2 == p1 - land_size)
+        if(p1 == p2 - landSize || p2 == p1 - landSize)
             return true;
 
         return false;
     }
 
-    function buy_land(uint8 land_id, string memory kingdom_name, uint8 r, uint8 g, uint8 b) public payable {
+    function buyLand(uint8 landId, string memory kingdomName, uint8 r, uint8 g, uint8 b) public payable {
+        require(landId < landSize ** 2 , "Please provide legit land id!");
         require(msg.value == 10, "You need to pay 10 WEI to buy a land!");
-        require(ownedBy[land_id] == address(0), "You can only buy unowned lands!");
+        require(ownedBy[landId] == address(0), "You can only buy unowned lands!");
         
-        if (owner_kingdom[msg.sender].is_created == 0){
-            owner_kingdom[msg.sender].is_created = 1;
-            owner_kingdom[msg.sender].kingdom_name = kingdom_name;
-            owner_kingdom[msg.sender].r = r;
-            owner_kingdom[msg.sender].g = g;
-            owner_kingdom[msg.sender].b = b;
+        if (ownerToKingdom[msg.sender].isCreated == 0){
+            ownerToKingdom[msg.sender].isCreated = 1;
+            ownerToKingdom[msg.sender].kingdomName = kingdomName;
+            ownerToKingdom[msg.sender].r = r;
+            ownerToKingdom[msg.sender].g = g;
+            ownerToKingdom[msg.sender].b = b;
         }
         
-        ownedBy[land_id] = msg.sender;
+        ownedBy[landId] = msg.sender;
     }
 
-    function attack_land(uint8 my_land_id, uint8 land_id) public land_owner(my_land_id) {
-        require(is_neighbour(my_land_id, land_id), "You can only attack your neighbour lands!");
-        address enemy = ownedBy[land_id];
-        uint result = rand_mod(100);
+    function attackLand(uint8 myLandId, uint8 landId) public landOwner(myLandId) {
+        require(myLandId < landSize ** 2 && landId < landSize ** 2, "Please provide legit land id!");
+        require(_isNeighbour(myLandId, landId), "You can only attack your neighbour lands!");
+        address enemy = ownedBy[landId];
+        uint result = randMod(100);
         if(result > 45)
-            ownedBy[land_id] = msg.sender;
+            ownedBy[landId] = msg.sender;
         else
-            ownedBy[my_land_id] = enemy;
+            ownedBy[myLandId] = enemy;
     }
 
-    function view_map() public view returns(address[] memory) {
-        address[] memory map = new address[](land_size ** 2);
-        for(uint8 i=0; i < land_size ** 2; i++) {
+    function viewMap() public view returns(address[] memory) {
+        address[] memory map = new address[](landSize ** 2);
+        for(uint8 i=0; i < landSize ** 2; i++) {
             map[i] = ownedBy[i];
         }
         return map;
