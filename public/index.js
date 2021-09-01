@@ -9,7 +9,6 @@ var kg_name = document.getElementById("kg-name");
 var kg_div = document.getElementById("kingdom-div");
 var currentAccount;
 var currentKingdom;
-var cryptdomABI;
 var map;
 
 const socket = io();
@@ -24,7 +23,7 @@ socket.on('connect', () => {
 
 async function startApp(ABI){
     console.log("Connecting to Web3...");
-    await connectWeb3();
+    await connectWeb3(ABI);
     console.log("Connecting to MetaMask...");
 
     // to handle account change
@@ -47,12 +46,6 @@ async function handleAccountsChanged(accounts) {
     }
 }
 
-async function displayKingdom(kingdom){
-    h2.innerText = "Kingdom: " + kingdom.kingdomName;
-    kg_div.style.backgroundColor = "rgb(" + kingdom.r +","+kingdom.g+","+kingdom.b+")";
-    h2.style.color = "rgb(" +(255-kingdom.r)+","+(255-kingdom.g)+","+(255-kingdom.b)+")";
-}
-
 function connectMetamask(){
     ethereum.request({ method: 'eth_requestAccounts' })
     .then(handleAccountsChanged)
@@ -65,7 +58,7 @@ function connectMetamask(){
     })
 }
 
-async function connectWeb3() {
+async function connectWeb3(ABI) {
     if (typeof web3 !== 'undefined') {
         web3js = new Web3(web3.currentProvider);
     } else {
@@ -73,7 +66,7 @@ async function connectWeb3() {
     }
     
     var cryptdomAddress = "0x2083e8a28E28Da608046442E0e8a2945d14cc4AB";
-    cryptdom = new web3js.eth.Contract(cryptdomABI.abi, cryptdomAddress);
+    cryptdom = new web3js.eth.Contract(ABI, cryptdomAddress);
 }
 
 async function displayMap(){
@@ -83,7 +76,7 @@ async function displayMap(){
 }
 
 async function drawMap(map){
-    let id = 0;
+    let id = 0; 
     for(i=0;i<10;i++){
         for(j=0;j<10;j++){
             if(map[id].kingdomName != "")
@@ -94,6 +87,12 @@ async function drawMap(map){
             id++;
         }
     }
+}
+
+async function displayKingdom(kingdom){
+    h2.innerText = "Kingdom: " + kingdom.kingdomName;
+    kg_div.style.backgroundColor = "rgb(" + kingdom.r +","+kingdom.g+","+kingdom.b+")";
+    h2.style.color = "rgb(" +(255-kingdom.r)+","+(255-kingdom.g)+","+(255-kingdom.b)+")";
 }
 
 async function buyLand(landId,kName,red,green,blue){
