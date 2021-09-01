@@ -22,12 +22,15 @@ async function test_func(){
 */
 //test_func();
 
+var ABI = require('./build/contracts/Cryptdoms.json').abi; //(with path)
+
 app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname + '/public/index.html'));
 });
 
 io.on('connection', function (socket) {
     console.log(socket.id,"connected");
+    socket.emit('abi',ABI);
 });
 
 http.listen(port, function(){

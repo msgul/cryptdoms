@@ -6,25 +6,32 @@ var loading_div = document.getElementById("map-loading");
 var h2 = document.getElementById("kingdom-h2");
 var kg_col = document.getElementById("kg-col");
 var kg_name = document.getElementById("kg-name");
+var kg_div = document.getElementById("kingdom-div");
 var currentAccount;
 var currentKingdom;
+var cryptdomABI;
 var map;
 
 const socket = io();
 
 socket.on('connect', () => {
     console.log("connected");
+    socket.on("abi", ABI => {
+        // getting ABI file from server
+        startApp(ABI);
+    });
 });
 
-window.addEventListener('load', async function() {
+async function startApp(ABI){
     console.log("Connecting to Web3...");
     await connectWeb3();
     console.log("Connecting to MetaMask...");
+
+    // to handle account change
     setInterval(function(){ connectMetamask(); }, 200);
-    console.log(currentAccount);
     console.log("Displaying map...");
     await displayMap();
-});
+}
 
 async function handleAccountsChanged(accounts) {
     if (accounts.length === 0) {
@@ -41,7 +48,9 @@ async function handleAccountsChanged(accounts) {
 }
 
 async function displayKingdom(kingdom){
-    h2.innerText = kingdom.kingdomName;
+    h2.innerText = "Kingdom: " + kingdom.kingdomName;
+    kg_div.style.backgroundColor = "rgb(" + kingdom.r +","+kingdom.g+","+kingdom.b+")";
+    h2.style.color = "rgb(" +(255-kingdom.r)+","+(255-kingdom.g)+","+(255-kingdom.b)+")";
 }
 
 function connectMetamask(){
@@ -97,10 +106,15 @@ async function getCursorPosition(canvas, event) {
     const y = event.clientY - rect.top;
 
     land_index = Math.floor(x/50) + Math.floor(y/50)*10;
-    if(currentKingdom.isCreated)
+
+    if(map[1][land_index].isCreated == 0){
+        if(currentKingdom.isCreated)
         await buyLand(land_index,currentKingdom.kingdomName,currentKingdom.r,currentKingdom.g,currentKingdom.b);
     else
         prompt("Please create a kingdom!");
+    }
+    // other cases will be added
+
     await displayMap();
 }
 
