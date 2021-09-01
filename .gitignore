@@ -102,3 +102,7 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Contract public ABI
+public/contract_abi.js
+
