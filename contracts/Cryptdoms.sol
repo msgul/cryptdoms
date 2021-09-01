@@ -108,6 +108,7 @@ contract Cryptdoms {
         for(uint i=0; i < landSize ** 2; i++) {
             kingdomMap[i] = ownerToKingdom[ownedBy[i]];
         }
+        
         return (addressMap, kingdomMap);
     }
 
