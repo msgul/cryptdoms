@@ -98,12 +98,17 @@ contract Cryptdoms {
 
     /* ----- View Functions ----- */
 
-    function viewMap() public view returns(address[] memory) {
-        address[] memory map = new address[](landSize ** 2);
+    function viewMap() public view returns(address[] memory, kingdom[] memory) {
+        address[] memory addressMap = new address[](landSize ** 2);
         for(uint i=0; i < landSize ** 2; i++) {
-            map[i] = ownedBy[i];
+            addressMap[i] = ownedBy[i];
         }
-        return map;
+
+        kingdom[] memory kingdomMap = new kingdom[](landSize ** 2);
+        for(uint i=0; i < landSize ** 2; i++) {
+            kingdomMap[i] = ownerToKingdom[ownedBy[i]];
+        }
+        return (addressMap, kingdomMap);
     }
 
     function getLandsByOwner() public view returns(uint[] memory) {
