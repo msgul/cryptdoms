@@ -1,5 +1,5 @@
-const Cryptdom = artifacts.require("Cryptdom");
+const Cryptdoms = artifacts.require("Cryptdoms");
 
 module.exports = function (deployer) {
-    deployer.deploy(Cryptdom);
+    deployer.deploy(Cryptdoms);
 };
