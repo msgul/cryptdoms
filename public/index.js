@@ -3,7 +3,11 @@ var ctx = canvas.getContext("2d");
 const width = canvas.width;
 const height = canvas.height;
 var loading_div = document.getElementById("map-loading");
+var h2 = document.getElementById("kingdom-h2");
+var kg_col = document.getElementById("kg-col");
+var kg_name = document.getElementById("kg-name");
 var currentAccount;
+var currentKingdom;
 var map;
 
 const socket = io();
@@ -14,21 +18,30 @@ socket.on('connect', () => {
 
 window.addEventListener('load', async function() {
     console.log("Connecting to Web3...");
-    
     await connectWeb3();
     console.log("Connecting to MetaMask...");
-    setInterval(function(){connectMetamask();}, 100);
+    setInterval(function(){ connectMetamask(); }, 200);
+    console.log(currentAccount);
     console.log("Displaying map...");
     await displayMap();
 });
 
-
-function handleAccountsChanged(accounts) {
+async function handleAccountsChanged(accounts) {
     if (accounts.length === 0) {
         console.log('Please connect to MetaMask.');
     } else if (accounts[0] !== currentAccount) {
         currentAccount = accounts[0];
+        console.log("Account changed to",currentAccount);
+        currentKingdom = await getKingdom(currentAccount);
+        if(currentKingdom.isCreated == 1)
+            await displayKingdom(currentKingdom);
+        else
+            h2.innerText = "Please create a kingdom";
     }
+}
+
+async function displayKingdom(kingdom){
+    h2.innerText = kingdom.kingdomName;
 }
 
 function connectMetamask(){
@@ -36,8 +49,6 @@ function connectMetamask(){
     .then(handleAccountsChanged)
     .catch((err) => {
     if (err.code === 4001) {
-        // EIP-1193 userRejectedRequest error
-        // If this happens, the user rejected the connection request.
         console.log('Please connect to MetaMask.');
     } else {
         console.error(err);
@@ -59,6 +70,7 @@ async function connectWeb3() {
 async function displayMap(){
     map = await cryptdom.methods.viewMap().call();
     await drawMap(map[1]);
+    console.log(map);
 }
 
 async function drawMap(map){
@@ -85,10 +97,39 @@ async function getCursorPosition(canvas, event) {
     const y = event.clientY - rect.top;
 
     land_index = Math.floor(x/50) + Math.floor(y/50)*10;
-    await buyLand(land_index,"king",100,250,250);
+    if(currentKingdom.isCreated)
+        await buyLand(land_index,currentKingdom.kingdomName,currentKingdom.r,currentKingdom.g,currentKingdom.b);
+    else
+        prompt("Please create a kingdom!");
     await displayMap();
+}
+
+async function getKingdom(address){
+    return await cryptdom.methods.getKingdomByAddress(address).call();
 }
 
 canvas.addEventListener('mousedown', async function(e) {
     await getCursorPosition(canvas, e);
 })
+
+function createKingdom()
+{
+    currentKingdom = {};
+    currentKingdom.isCreated = 1;
+    currentKingdom.kingdomName = kg_name.value;
+    colors = getColors();
+    currentKingdom.r = colors[0];
+    currentKingdom.g = colors[1];
+    currentKingdom.b = colors[2];
+    displayKingdom(currentKingdom);
+}
+
+function getColors() {
+    const color = kg_col.value;
+    colors = [];
+    colors.push(parseInt(color.substr(1,2), 16));
+    colors.push(parseInt(color.substr(3,2), 16));
+    colors.push(parseInt(color.substr(5,2), 16));
+    return colors;
+}
+  

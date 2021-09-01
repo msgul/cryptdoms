@@ -42,7 +42,7 @@
     <div class="main">
         <div class="kingdom">
             <br>
-            <h2>Connect to Metamask to get your acccount!</h2>
+            <h2 id="kingdom-h2">Connect to Metamask to get your Kingdom</h2>
         </div>
         <div class="map">
             <!-- <div id="map-loading">
@@ -60,7 +60,14 @@
             
             <canvas style="background-color: blanchedalmond;" id="canvas-map" width="500" height="500"></canvas>
         </div>
+        <div>
+            <input type="text" id="kg-name">
+            <input type="color" id="kg-col">
+            <button onclick="createKingdom()" id="kg-but">Create</button>
+        </div>
+       
     </div>
+
 
     <script src="contract_abi.js"></script>
     <script src="index.js"></script>
