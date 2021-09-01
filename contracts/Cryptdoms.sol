@@ -2,6 +2,7 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 contract Cryptdoms {
+    
 
     struct kingdom{
         string kingdomName;
@@ -43,12 +44,14 @@ contract Cryptdoms {
         return uint(keccak256(abi.encodePacked(block.timestamp, msg.sender, randNonce))) % modulus;
     }
 
-    function _isNeighbour(uint p1, uint p2) pure internal returns(bool) {
+    function _isNeighbour(uint256 p1, uint256 p2) pure internal returns(bool) {
         if(p1 == p2 + 1 && p1 % landSize != 0)
             return true;
-        if(p1 == p2 - 1 && p2 % landSize != 0)
+        if(p2 > 0 && p1 == p2 - 1 && p2 % landSize != 0)
             return true;
-        if(p1 == p2 - landSize || p2 == p1 - landSize)
+        if(p2 >= landSize && p1 == p2 - landSize)
+            return true;
+        if(p1 >= landSize && p2 == p1 - landSize)
             return true;
 
         return false;
@@ -75,6 +78,7 @@ contract Cryptdoms {
         require(_isNeighbour(myLandId, landId), "You can only attack your neighbour lands!");
         address enemy = ownedBy[landId];
         uint result = randMod(100);
+        // TODO event emit for win or lose and return result text
         if(result > 45)
             ownedBy[landId] = msg.sender;
         else
@@ -84,16 +88,16 @@ contract Cryptdoms {
     // Do we want to withdraw only a portion of the balance or all of it?
     function withdrawBalance(uint amount) public payable{
         require(ownerToKingdom[msg.sender].balance >= amount, "You cannot withdraw an amount that is more than you have!");
-        ownerToKingdom[msg.sender].balance -= uint224(amount);
+        ownerToKingdom[msg.sender].balance -= uint224(amount * 1e9);
         (bool success, ) = msg.sender.call{value:amount}("");
         require(success, "Withdraw failed.");
     }
     
 
     // temporary deposit balance for kingdoms 
-    function depositBalance(uint amount) public payable{
-        require(msg.value == amount, "Amount and value is not equal!");
-        ownerToKingdom[msg.sender].balance += uint224(amount);        
+    function depositBalance() public payable{
+        require(msg.value % 1e9 == 0, "You have to deposit in gwei not wei!");
+        ownerToKingdom[msg.sender].balance += uint224(msg.value);        
     }
 
     /* ----- View Functions ----- */
@@ -107,11 +111,12 @@ contract Cryptdoms {
         kingdom[] memory kingdomMap = new kingdom[](landSize ** 2);
         for(uint i=0; i < landSize ** 2; i++) {
             kingdomMap[i] = ownerToKingdom[ownedBy[i]];
+            delete(kingdomMap[i].balance);
         }
-        
         return (addressMap, kingdomMap);
     }
 
+    // can be done in frontend
     function getLandsByOwner() public view returns(uint[] memory) {
         uint size = 0;
         for(uint i=0; i < landSize ** 2; i++) {
@@ -135,6 +140,7 @@ contract Cryptdoms {
         return ownerToKingdom[msg.sender];
     }
 
+    // Will probably be removed
     function getKingdomByAddress(address _address) public view returns(kingdom memory) {
         kingdom memory userKingdom = ownerToKingdom[_address];
         return userKingdom;
