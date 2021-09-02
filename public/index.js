@@ -68,6 +68,23 @@ async function connectWeb3(contract_abi, contract_adr) {
     }
 
     cryptdom = new web3js.eth.Contract(contract_abi, contract_adr);
+
+    cryptdom.events.LandBought({})
+    .on('data', async function(event){
+        result = event.returnValues;
+        console.log(result._owner,"bought",result._landId);
+        await displayMap();
+    })
+    .on('error', console.error);
+
+    cryptdom.events.Battle({})
+    .on('data', async function(event){
+        result = event.returnValues;
+        console.log(result._attacker,"attacked",result._defender,result._success);
+        await displayMap();
+    })
+    .on('error', console.error);
+    
 }
 
 async function displayMap(){
@@ -132,8 +149,6 @@ async function getCursorPosition(canvas, event) {
         }
     }
     // other cases will be added
-    
-    await displayMap();
 }
 
 async function getKingdom(address){
