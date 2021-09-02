@@ -10,6 +10,8 @@ var kg_div = document.getElementById("kingdom-div");
 var currentAccount;
 var currentKingdom;
 var map;
+var attackMode = false;
+var attackerLand;
 
 const socket = io();
 
@@ -99,13 +101,10 @@ async function buyLand(landId,kName,red,green,blue){
 }
 
 async function attackLand(myLand, otherLand){
-    return await cryptdom.methods.attackLand(myLand, otherLand).call();
+    return await cryptdom.methods.attackLand(myLand, otherLand).send({from:currentAccount});
 }
 
 async function getCursorPosition(canvas, event) {
-
-
-    console.log(await cryptdom.methods.getKingdom().call({from:currentAccount}));
 
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
@@ -122,8 +121,14 @@ async function getCursorPosition(canvas, event) {
         else
             prompt("Please create a kingdom!");
     } else {
-        if(map[0][land_index] == currentAccount){
-            
+        if(map[0][land_index].toLowerCase() == currentAccount){
+            attackMode = true;
+            attackerLand = land_index;
+            console.log("Attacking from",attackerLand);
+        } 
+        else if(attackMode){
+            console.log("Attacking",land_index);
+            console.log(await attackLand(attackerLand, land_index));
         }
     }
     // other cases will be added
