@@ -15,15 +15,15 @@ const socket = io();
 
 socket.on('connect', () => {
     console.log("connected");
-    socket.on("abi", ABI => {
+    socket.on("contract", (contract_abi, contract_adr) => {
         // getting ABI file from server
-        startApp(ABI);
+        startApp(contract_abi, contract_adr);
     });
 });
 
-async function startApp(ABI){
+async function startApp(contract_abi, contract_adr){
     console.log("Connecting to Web3...");
-    await connectWeb3(ABI);
+    await connectWeb3(contract_abi, contract_adr);
     console.log("Connecting to MetaMask...");
 
     // to handle account change
@@ -58,15 +58,14 @@ function connectMetamask(){
     })
 }
 
-async function connectWeb3(ABI) {
+async function connectWeb3(contract_abi, contract_adr) {
     if (typeof web3 !== 'undefined') {
         web3js = new Web3(web3.currentProvider);
     } else {
         this.prompt("Please install Metamask to play!");
     }
-    
-    var cryptdomAddress = "0x2083e8a28E28Da608046442E0e8a2945d14cc4AB";
-    cryptdom = new web3js.eth.Contract(ABI, cryptdomAddress);
+
+    cryptdom = new web3js.eth.Contract(contract_abi, contract_adr);
 }
 
 async function displayMap(){
@@ -99,7 +98,15 @@ async function buyLand(landId,kName,red,green,blue){
     return await cryptdom.methods.buyLand(landId,kName,red,green,blue).send({from:currentAccount, value:10});
 }
 
+async function attackLand(myLand, otherLand){
+    return await cryptdom.methods.attackLand(myLand, otherLand).call();
+}
+
 async function getCursorPosition(canvas, event) {
+
+
+    console.log(await cryptdom.methods.getKingdom().call({from:currentAccount}));
+
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
@@ -107,13 +114,20 @@ async function getCursorPosition(canvas, event) {
     land_index = Math.floor(x/50) + Math.floor(y/50)*10;
 
     if(map[1][land_index].isCreated == 0){
-        if(currentKingdom.isCreated)
-        await buyLand(land_index,currentKingdom.kingdomName,currentKingdom.r,currentKingdom.g,currentKingdom.b);
-    else
-        prompt("Please create a kingdom!");
+        if(currentKingdom.isCreated){
+            receipt = await buyLand(land_index,currentKingdom.kingdomName,currentKingdom.r,currentKingdom.g,currentKingdom.b);
+            console.log(receipt);
+            alert("Land bought! Tx Hash: " + receipt.transactionHash);
+        }
+        else
+            prompt("Please create a kingdom!");
+    } else {
+        if(map[0][land_index] == currentAccount){
+            
+        }
     }
     // other cases will be added
-
+    
     await displayMap();
 }
 
@@ -145,4 +159,3 @@ function getColors() {
     colors.push(parseInt(color.substr(5,2), 16));
     return colors;
 }
-  
