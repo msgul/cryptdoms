@@ -177,7 +177,13 @@ async function getKingdomList(map){
             
             var span = document.createElement("span");
             span.innerText = kingdom_list[i][1];
+            let r = adrToKingdom[kingdom_list[i][0]].r;
+            let g = adrToKingdom[kingdom_list[i][0]].g;
+            let b = adrToKingdom[kingdom_list[i][0]].b;
+            top_list_a[i].style.backgroundColor = "rgba("+r+","+g+","+b+",0.31)";
+
             top_list_a[i].appendChild(span);
+
 
         }
         
