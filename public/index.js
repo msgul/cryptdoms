@@ -7,6 +7,7 @@ var h2 = document.getElementById("kingdom-h2");
 var kg_col = document.getElementById("kg-col");
 var kg_name = document.getElementById("kg-name");
 var kg_div = document.getElementById("kingdom-div");
+var top_list_a = document.getElementsByClassName("top-list");
 var cre_kg = document.getElementById("create-kingdom");
 var cur_kg = document.getElementById("current-kingdom");
 var currentAccount;
@@ -96,10 +97,14 @@ async function connectWeb3(contract_abi, contract_adr) {
 async function displayMap(){
     map = await cryptdom.methods.viewMap().call();
     await drawMap(map[1]);
+    
 
     for(i=0;i<map_size;i++){
-        adrToKingdom[map[0][i]] = map[1][i];
+        if(map[0][i] != 0)
+            adrToKingdom[map[0][i]] = map[1][i];
     }
+
+    await getKingdomList(map[0]);
 }
 
 async function drawMap(map){
@@ -116,7 +121,59 @@ async function drawMap(map){
         }
     }
 
-    //nameKingdoms(map) will be added;
+}
+
+async function getKingdomList(map){
+    let adress_land_count = [];
+    for(i=0;i<map_size;i++){
+        if(map[i] != 0){
+            if(!adress_land_count[map[i]]){
+                adress_land_count[map[i]] = 1;
+                console.log("sdfgd");            
+            }else
+                adress_land_count[map[i]]++;
+        }
+    }
+
+    console.log(adress_land_count);
+    
+    // Create items array
+    var items = Object.keys(adress_land_count).map(function(key) {
+        return [key, adress_land_count[key]];
+    });
+    // Sort the array based on the second element
+    items.sort(function(first, second) {
+        return second[1] - first[1];
+    });
+    // Create a new array with only the first 10 items
+    let kingdom_list = items.slice(0, top_list_a.length);
+    console.log(kingdom_list[0][0]);
+    console.log(adrToKingdom);
+    for(i=0;i < top_list_a.length;i++){
+        if(kingdom_list[i]){
+            top_list_a[i].innerText = adrToKingdom[kingdom_list[i][0]].kingdomName;
+
+            // adding medal at the end of the text
+            if(i == 0)
+                top_list_a[i].innerHTML += " &#129351;";
+            if(i == 1)
+                top_list_a[i].innerHTML += " &#129352;";
+            if(i == 2)
+                top_list_a[i].innerHTML += " &#129353;";
+
+            top_list_a[i].getElementsByTagName("span").innerText = kingdom_list[i];
+            
+            var span = document.createElement("span");
+            span.innerText = kingdom_list[i][1];
+            console.log(kingdom_list[i]);
+            top_list_a[i].appendChild(span);
+
+        }
+        
+    }
+    
+    console.log("Address - Count Mapping");
+    console.log( adress_land_count);
 }
 
 async function displayKingdom(kingdom){
