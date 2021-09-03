@@ -1,19 +1,65 @@
 .main{
-    width: 80%;
-
-    height: 100%;
+    width: 55em;
     margin: auto;
     margin-top: 1%;
 }
 
 .kingdom{
     width: 100%;
-    height: 80px;
-    background-color: rgb(240, 207, 222);
+    height: 90px;
+    border-width: 5px;
     text-align: center;
 }
 
-.map{
-    width: 100%;
+.screen{
+    width: 55em;
     text-align: center;
+    margin-top: 2%;
+}
+
+.kingdom-info{
+    float: left;
+    background-color: cadetblue;
+    width: 11.2em;
+    margin-right: 0.5em;
+    height: 31.5em;
+}
+
+.canvas-div{
+    width: 3em;
+    float: left;
+}
+
+.map{
+    background-color: blanchedalmond;
+    border-style: solid;
+    margin: auto;
+}
+
+.kingdom-list{
+    float: right;
+    width: 11.2em;
+    height: 31.5em;
+    margin-left: 0.5em;
+}
+
+.vertical-menu {
+    width: 11.3em;
+}
+  
+.vertical-menu a {
+    background-color: #eee;
+    color: black;
+    display: block;
+    padding: 12px;
+    text-decoration: none;
+}
+
+.vertical-menu a:hover {
+    background-color: #ccc;
+}
+
+.vertical-menu a.active {
+    background-color: #04AA6D;
+    color: white;
 }

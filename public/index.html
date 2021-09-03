@@ -24,13 +24,7 @@
                 <a class="nav-link active" aria-current="page" href="#">Home</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Features</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Pricing</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                <a class="nav-link" href="#">How to Connect</a>
               </li>
             </ul>
           </div>
@@ -40,17 +34,41 @@
   <body>
     
     <div class="main">
-        <div id="kingdom-div" class="kingdom">
-            <br>
-            <h2 id="kingdom-h2">Connect to Metamask to get your Kingdom</h2>
+        <div id="kingdom-div" class="kingdom" style="border-style: solid;">
+
+            <div id="create-kingdom" style="display: none;">
+                <h4>Create Your Cryptdom</h4>
+                <input type="text" id="kg-name">
+                <input type="color" id="kg-col">
+                <button onclick="createKingdom()" id="kg-but">Create</button>
+            </div>
+            <div id="current-kingdom">
+                <br>
+                <h2 id="kingdom-h2">Connect to Metamask to get your Cryptdom</h2>
+                <br>
+            </div>
         </div>
-        <div class="map">
-            <canvas style="background-color: blanchedalmond; margin: 2%; border-style: solid;" id="canvas-map" width="499" height="499"></canvas>
-        </div>
-        <div>
-            <input type="text" id="kg-name">
-            <input type="color" id="kg-col">
-            <button onclick="createKingdom()" id="kg-but">Create</button>
+        <div class="screen">
+            <div class="kingdom-info">
+                Kingdom Info
+            </div>
+            <div class="canvas-div">
+                <canvas id="canvas-map" class="map" width="499" height="499"></canvas>
+            </div>
+            <div class="kingdom-list">
+                <div class="vertical-menu">
+                    <a href="#" class="active">&#127984; Cryptdoms &#127984;</a>
+                    <a href="#">Cryptdom 1 &#129351;</a>
+                    <a href="#">Cryptdom 2 &#129352;</a>
+                    <a href="#">Cryptdom 3 &#129353;</a>
+                    <a href="#">Cryptdom 4</a>
+                    <a href="#">Cryptdom 5</a>
+                    <a href="#">Cryptdom 6</a>
+                    <a href="#">Cryptdom 7</a>
+                    <a href="#">Cryptdom 8</a>
+                    <a href="#">Cryptdom 9</a>
+                  </div>
+            </div>
         </div>
        
     </div>

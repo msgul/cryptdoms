@@ -7,6 +7,8 @@ var h2 = document.getElementById("kingdom-h2");
 var kg_col = document.getElementById("kg-col");
 var kg_name = document.getElementById("kg-name");
 var kg_div = document.getElementById("kingdom-div");
+var cre_kg = document.getElementById("create-kingdom");
+var cur_kg = document.getElementById("current-kingdom");
 var currentAccount;
 var currentKingdom;
 var map;
@@ -43,8 +45,11 @@ async function handleAccountsChanged(accounts) {
         currentKingdom = await getKingdom(currentAccount);
         if(currentKingdom.isCreated == 1)
             await displayKingdom(currentKingdom);
-        else
-            h2.innerText = "Please create a kingdom";
+        else{
+            cur_kg.style.display = "none";
+            cre_kg.style.display = "block";
+        }
+           
     }
 }
 
@@ -52,11 +57,11 @@ function connectMetamask(){
     ethereum.request({ method: 'eth_requestAccounts' })
     .then(handleAccountsChanged)
     .catch((err) => {
-    if (err.code === 4001) {
-        console.log('Please connect to MetaMask.');
-    } else {
-        console.error(err);
-    }
+        if (err.code === 4001) {
+            console.log('Please connect to MetaMask.');
+        } else {
+            console.error(err);
+        }
     })
 }
 
@@ -84,7 +89,6 @@ async function connectWeb3(contract_abi, contract_adr) {
         await displayMap();
     })
     .on('error', console.error);
-    
 }
 
 async function displayMap(){
@@ -94,11 +98,12 @@ async function displayMap(){
 }
 
 async function drawMap(map){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     let id = 0; 
     for(i=0;i<10;i++){
         for(j=0;j<10;j++){
-            if(map[id].kingdomName != "")
-                ctx.fillStyle = "rgb(" + map[id].r + "," + map[id].g + "," + map[id].b +")";
+            if(map[id].isCreated != 0)
+                ctx.fillStyle = "rgba(" + map[id].r + "," + map[id].g + "," + map[id].b +",0.7)";
             else
                 ctx.fillStyle = "rgb(190,190,190)";
             ctx.fillRect(j*50, i*50, 49, 49);
@@ -108,9 +113,10 @@ async function drawMap(map){
 }
 
 async function displayKingdom(kingdom){
-    h2.innerText = "Kingdom: " + kingdom.kingdomName;
-    kg_div.style.backgroundColor = "rgb(" + kingdom.r +","+kingdom.g+","+kingdom.b+")";
-    h2.style.color = "rgb(" +(255-kingdom.r)+","+(255-kingdom.g)+","+(255-kingdom.b)+")";
+    h2.innerText = "[ " + kingdom.kingdomName + " ]";
+    cre_kg.style.display = "none";
+    cur_kg.style.display = "block";
+    kg_div.style.borderColor = "rgba(" + kingdom.r +","+kingdom.g+","+kingdom.b+",0.7)";
 }
 
 async function buyLand(landId,kName,red,green,blue){
