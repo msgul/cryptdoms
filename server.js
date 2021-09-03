@@ -19,6 +19,11 @@ app.get('/', function(req, res) {
 io.on('connection', function (socket) {
     console.log(socket.id,"connected");
     socket.emit('contract', abi, address);
+
+    socket.on('message', (sender,msg) => {
+        io.emit('message',sender,msg);
+        console.log(sender,msg);
+    });
 });
 
 http.listen(port, function(){

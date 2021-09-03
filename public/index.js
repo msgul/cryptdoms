@@ -10,6 +10,8 @@ var kg_div = document.getElementById("kingdom-div");
 var top_list_a = document.getElementsByClassName("top-list");
 var cre_kg = document.getElementById("create-kingdom");
 var cur_kg = document.getElementById("current-kingdom");
+var chat_tb = document.getElementById("chat-tb");
+var chat_bd = document.getElementById("chat-body");
 var currentAccount;
 const map_size = 100;
 var currentKingdom;
@@ -26,6 +28,11 @@ socket.on('connect', () => {
         // getting ABI file from server
         startApp(contract_abi, contract_adr);
     });
+
+    socket.on('message', (sender,msg) => {
+        chat_bd.innerText += sender + ": " + msg + "\n";
+        chat_bd.scrollTop = chat_bd.scrollHeight;
+    });
 });
 
 async function startApp(contract_abi, contract_adr){
@@ -38,6 +45,16 @@ async function startApp(contract_abi, contract_adr){
     console.log("Displaying map...");
     await displayMap();
 }
+
+chat_tb.onkeydown = function(e) {
+    if (e.key === 'Enter' || e.keyCode === 13) {
+        if(chat_tb.value != ""){
+            socket.emit('message',currentKingdom.kingdomName,chat_tb.value);
+            chat_tb.value = "";
+        }
+        
+    }
+};
 
 async function handleAccountsChanged(accounts) {
     if (accounts.length === 0) {
@@ -128,14 +145,11 @@ async function getKingdomList(map){
     for(i=0;i<map_size;i++){
         if(map[i] != 0){
             if(!adress_land_count[map[i]]){
-                adress_land_count[map[i]] = 1;
-                console.log("sdfgd");            
+                adress_land_count[map[i]] = 1;  
             }else
                 adress_land_count[map[i]]++;
         }
     }
-
-    console.log(adress_land_count);
     
     // Create items array
     var items = Object.keys(adress_land_count).map(function(key) {
@@ -147,8 +161,6 @@ async function getKingdomList(map){
     });
     // Create a new array with only the first 10 items
     let kingdom_list = items.slice(0, top_list_a.length);
-    console.log(kingdom_list[0][0]);
-    console.log(adrToKingdom);
     for(i=0;i < top_list_a.length;i++){
         if(kingdom_list[i]){
             top_list_a[i].innerText = adrToKingdom[kingdom_list[i][0]].kingdomName;
@@ -165,15 +177,11 @@ async function getKingdomList(map){
             
             var span = document.createElement("span");
             span.innerText = kingdom_list[i][1];
-            console.log(kingdom_list[i]);
             top_list_a[i].appendChild(span);
 
         }
         
     }
-    
-    console.log("Address - Count Mapping");
-    console.log( adress_land_count);
 }
 
 async function displayKingdom(kingdom){

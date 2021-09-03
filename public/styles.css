@@ -17,12 +17,20 @@
     margin-top: 2%;
 }
 
-.kingdom-info{
+.chat{
     float: left;
-    background-color: cadetblue;
+    background-color: hsl(60, 6%, 87%);
     width: 11.2em;
     margin-right: 0.5em;
     height: 31.5em;
+}
+
+.chat-body{
+    text-align: left;
+    height: 93%;
+    padding: 2%;
+    word-wrap: break-word;
+    overflow-y: scroll;
 }
 
 .canvas-div{
@@ -31,7 +39,7 @@
 }
 
 .map{
-    background-color: blanchedalmond;
+    background-color: rgb(222, 252, 218);
     border-style: solid;
     margin: auto;
 }
