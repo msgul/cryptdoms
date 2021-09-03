@@ -31,6 +31,7 @@
     padding: 2%;
     word-wrap: break-word;
     overflow-y: scroll;
+    font-size: 0.9em;
 }
 
 .canvas-div{
