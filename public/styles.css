@@ -44,6 +44,7 @@
 }
 
 .vertical-menu {
+    text-align: left;
     width: 11.3em;
 }
   
@@ -59,7 +60,12 @@
     background-color: #ccc;
 }
 
+.vertical-menu a span{
+    float: right;
+}
+
 .vertical-menu a.active {
     background-color: #04AA6D;
     color: white;
+    text-align: center;
 }
