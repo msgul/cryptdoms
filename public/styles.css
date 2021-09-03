@@ -62,6 +62,7 @@
 
 .vertical-menu a span{
     float: right;
+    font-weight: bold;
 }
 
 .vertical-menu a.active {

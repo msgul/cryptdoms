@@ -10,7 +10,9 @@ var kg_div = document.getElementById("kingdom-div");
 var cre_kg = document.getElementById("create-kingdom");
 var cur_kg = document.getElementById("current-kingdom");
 var currentAccount;
+const map_size = 100;
 var currentKingdom;
+var adrToKingdom = [];
 var map;
 var attackMode = false;
 var attackerLand;
@@ -94,7 +96,10 @@ async function connectWeb3(contract_abi, contract_adr) {
 async function displayMap(){
     map = await cryptdom.methods.viewMap().call();
     await drawMap(map[1]);
-    console.log(map);
+
+    for(i=0;i<map_size;i++){
+        adrToKingdom[map[0][i]] = map[1][i];
+    }
 }
 
 async function drawMap(map){
@@ -110,6 +115,8 @@ async function drawMap(map){
             id++;
         }
     }
+
+    //nameKingdoms(map) will be added;
 }
 
 async function displayKingdom(kingdom){
