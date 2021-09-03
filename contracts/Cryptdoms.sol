@@ -3,7 +3,6 @@ pragma solidity >=0.4.22 <0.9.0;
 
 contract Cryptdoms {
     
-
     struct Kingdom{
         string kingdomName;
         uint8 r;
@@ -21,11 +20,12 @@ contract Cryptdoms {
     uint randNonce = 0;
 
     /* 
+    
      * Consideration - Should it be able to receive ETH? 
      * This contract currently unable to receive ETH through send
      */ 
     
-    event Battle(address indexed _attacker, address indexed _defender, bool _success);
+    event Battle(address indexed _attacker, address indexed _defender, uint attackerLand, uint defenderLand, bool _success);
     event KingdomCreation(address indexed _owner, Kingdom _kingdom);
     event LandBought(address indexed _owner, uint _landId);
 
@@ -80,9 +80,12 @@ contract Cryptdoms {
         ownedBy[landId] = msg.sender;
     }
 
-    function attackLand(uint myLandId, uint landId) public landOwner(myLandId) returns(bool){
+    function attackLand(uint myLandId, uint landId) public landOwner(myLandId){
         require(myLandId < landSize ** 2 && landId < landSize ** 2, "Please provide legit land id!");
         require(_isNeighbour(myLandId, landId), "You can only attack your neighbour lands!");
+        require(ownedBy[myLandId] != ownedBy[landId], "You cannot attack your territory!");
+        require(ownedBy[landId] != address(0), "You cannot attack wild lands!");
+
         address enemy = ownedBy[landId];
         uint result = randMod(100);
         bool success;
@@ -94,9 +97,7 @@ contract Cryptdoms {
             ownedBy[myLandId] = enemy;
             success = false;
         }
-        emit Battle(msg.sender, enemy, success);
-        
-        return success;
+        emit Battle(msg.sender, enemy, myLandId, landId, success);
     }
 
     // Do we want to withdraw only a portion of the balance or all of it?
