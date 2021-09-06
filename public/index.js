@@ -35,7 +35,7 @@ socket.on('connect', () => {
     });
 
     socket.on('message', (sender,msg) => {
-        chat_bd.innerHTML += "<strong>" + sender + "</strong>" +": " + msg + "<br>";
+        chat_bd.innerText += sender + ": " + msg + "\n";
         chat_bd.scrollTop = chat_bd.scrollHeight;
     });
 });
@@ -51,16 +51,15 @@ async function startApp(contract_abi, contract_adr){
     await displayMap();
 }
 
-/*
+
 chat_tb.onkeydown = function(e) {
     if (e.key === 'Enter' || e.keyCode === 13) {
         if(chat_tb.value != ""){
             socket.emit('message',currentKingdom.kingdomName,chat_tb.value);
             chat_tb.value = "";
         }
-        
     }
-};*/
+};
 
 async function handleAccountsChanged(accounts) {
     if (accounts.length === 0) {
