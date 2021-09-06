@@ -7,6 +7,7 @@ var h2 = document.getElementById("kingdom-h2");
 var kg_col = document.getElementById("kg-col");
 var kg_name = document.getElementById("kg-name");
 var kg_div = document.getElementById("kingdom-div");
+var kg_body = document.getElementById("kingdom-body");
 var top_list_a = document.getElementsByClassName("top-list");
 var cre_kg = document.getElementById("create-kingdom");
 var cur_kg = document.getElementById("current-kingdom");
@@ -14,6 +15,7 @@ var chat_tb = document.getElementById("chat-tb");
 var chat_bd = document.getElementById("chat-body");
 var buy_atk = document.getElementById("buy-atk-but");
 var atk_info = document.getElementById("atk-info");
+var result_div = document.getElementById("result");
 var currentAccount;
 const map_size = 100;
 var currentKingdom;
@@ -138,25 +140,31 @@ async function drawMap(map, selected1, selected2){
             if(map[id].isCreated != 0)
                 ctx.fillStyle = "rgba(" + map[id].r + "," + map[id].g + "," + map[id].b +",0.7)";
             else
-                ctx.fillStyle = "rgba(190,190,190,1)";
+                ctx.fillStyle = "rgba(210,210,210,1)";
             ctx.fillRect(j*50, i*50, 49, 49);
 
             if(i*10+j == selected1){
                 ctx.beginPath();
                 ctx.lineWidth = 5;
-                console.log(selected1);
                 ctx.rect(j*50+2, i*50+2, 45, 45);
-                ctx.strokeStyle = "green";
+                ctx.strokeStyle = "rgba(70,200,70,0.8)";
                 ctx.stroke();
+                ctx.font = "20px Arial";
+                ctx.fillText("📍", j*50+17, i*50+32);
             }
             if(i*10 + j == selected2){
                 ctx.beginPath();
                 ctx.lineWidth = 5;
-                console.log(selected1);
                 ctx.rect(j*50+2, i*50+2, 45, 45);
-                ctx.strokeStyle = "red";
+                ctx.strokeStyle = "rgba(250,70,70,0.8)"
                 ctx.stroke();
+
+                ctx.font = "20px Arial";
+                ctx.fillText("⚔️", j*50+11, i*50+32);
+                
             }
+
+            
 
             id++;
         }
@@ -217,7 +225,8 @@ async function displayKingdom(kingdom){
     h2.innerText = "[ " + kingdom.kingdomName + " ]";
     cre_kg.style.display = "none";
     cur_kg.style.display = "block";
-    kg_div.style.borderColor = "rgba(" + kingdom.r +","+kingdom.g+","+kingdom.b+",0.7)";
+    //kg_div.style.borderColor = "rgba(" + kingdom.r +","+kingdom.g+","+kingdom.b+",0.7)";
+    kg_body.style.backgroundColor = "rgba(" + kingdom.r +","+kingdom.g+","+kingdom.b+",0.2)";
 }
 
 async function buyLand(landId,kName,red,green,blue){
@@ -243,6 +252,8 @@ async function getCursorPosition(canvas, event) {
             buy_atk.innerText = "Buy";
             buy_atk.disabled = false;
             atk_info.innerText = "Buy this land for only 0.01 ETH";
+            buy_atk.className = "btn btn-primary"
+            attackMode = false;
         }
         else
             alert("Please create a kingdom!");
@@ -254,7 +265,8 @@ async function getCursorPosition(canvas, event) {
             console.log("Attacking from",attackerLand);
             buy_atk.innerText = "Attack";
             buy_atk.disabled = true;
-            atk_info.innerText = "Choose a neighbour enemy land to attack!";
+            buy_atk.className = "btn btn-danger";
+            atk_info.innerText = "Select a neighbour land to attack!";
         } 
         else if(attackMode && isNeighbour(attackerLand,land_index)){
             await drawMap(map[1], attackerLand, land_index);
@@ -299,10 +311,15 @@ function getColors() {
 async function buyOrAttack(action){
     if(action == "Buy"){
         receipt = await buyLand(land_index,currentKingdom.kingdomName,currentKingdom.r,currentKingdom.g,currentKingdom.b);
-        alert("Land bought! Tx Hash: " + receipt.transactionHash);
+        console.log(receipt.transactionHash);
+
     }else{
-        console.log(await attackLand(attackerLand, land_index));
+        receipt = await attackLand(attackerLand, land_index);
+        console.log(receipt);
     }
+
+    buy_atk.disabled = true;
+    atk_info.innerText="Select an empty land to buy or select your land to attack";
 }
 
 function isNeighbour(p1, p2) {

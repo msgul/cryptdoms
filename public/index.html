@@ -34,51 +34,80 @@
   <body>
     
     <div class="main">
-        <div id="kingdom-div" class="kingdom" style="border-style: solid;">
+        <div id="kingdom-div" class="kingdom">
 
-            <div id="create-kingdom" style="display: none;">
-                <h4>Create Your Cryptdom</h4>
-                <input type="text" id="kg-name">
-                <input type="color" id="kg-col">
-                <button onclick="createKingdom()" id="kg-but">Create</button>
+
+            <div class="card">
+                <div class="card-header">My Kingdom</div>
+                <div class="card-body" id="kingdom-body">
+                    <div id="create-kingdom" style="display: none;">
+                        <h4>Create Your Cryptdom</h4>
+                        <input type="text" id="kg-name">
+                        <input type="color" id="kg-col">
+                        <button onclick="createKingdom()" id="kg-but">Create</button>
+                    </div>
+                    <div id="current-kingdom">
+                        <h2 id="kingdom-h2">Connect to Metamask to get your Cryptdom</h2>
+                    </div>
+                </div>
             </div>
-            <div id="current-kingdom">
-                <br>
-                <h2 id="kingdom-h2">Connect to Metamask to get your Cryptdom</h2>
-                <br>
-            </div>
+
+            
         </div>
         <div class="screen">
+            
             <div class="chat">
-                <div style="font-size: 100px;">
-                    &#127984;
+
+                <div class="card">
+                    <div class="card-header">Actions</div>
+
+                    <div class="card-body">
+                        <h5 style="font-size: 100px;" class="card-title">&#127984;</h5>
+                        <!-- <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6> -->
+                        <p id="atk-info">Select an empty land to buy or select your land to attack</p>
+                        <button type="button" class="btn btn-primary" onclick="buyOrAttack(this.innerText)" id="buy-atk-but" disabled>Buy</button>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="alert alert-primary" role="alert" style="display: none;" id="result">
+                            A simple primary alert—check it out!
+                          </div>
+                    </div>
+
+                    <!-- <div class="card-footer">Tx:hash</div> -->
                 </div>
-                <div>
-                    <p id="atk-info">Select an empty land to buy or select your land to attack</p>
-                    <button onclick="buyOrAttack(this.innerText)" id="buy-atk-but" disabled>Buy</button>
-                </div>
+
+
                 <!-- <div class="chat-body" id="chat-body"></div>
                 <div class="chat-tb-div">
                     <input type="text" id="chat-tb" class="form-control" aria-describedby="emailHelp" placeholder="Type here">
                 </div> -->
             </div>
             <div class="canvas-div">
-                <canvas id="canvas-map" class="map" width="499" height="499"></canvas>
+                <div class="card" style="width: 100%;">
+                    <div class="card-header">Map</div>
+                        <canvas id="canvas-map"width="499" height="499"></canvas>
+                </div>
             </div>
             <div class="kingdom-list" id="top-list">
-                <div class="vertical-menu">
-                    <a href="#" class="active">&#127984; Cryptdoms &#127984;</a>
-                    <a class="top-list" href="#">- </a>
-                    <a class="top-list" href="#">- </a>
-                    <a class="top-list" href="#">- </a>
-                    <a class="top-list" href="#">- </a>
-                    <a class="top-list" href="#">- </a>
-                    <a class="top-list" href="#">- </a>
-                    <a class="top-list" href="#">- </a>
-                    <a class="top-list" href="#">- </a>
-                    <a class="top-list" href="#">- </a>
-                    <a class="top-list" href="#">- </a>
-                  </div>
+                <div class="card" style="width: 100%;">
+                    <div class="card-header">Top 10</div>
+                    <div class="card-body" style="padding: 0ex;">
+                        <div class="vertical-menu">
+                            <a class="top-list" href="#">- </a>
+                            <a class="top-list" href="#">- </a>
+                            <a class="top-list" href="#">- </a>
+                            <a class="top-list" href="#">- </a>
+                            <a class="top-list" href="#">- </a>
+                            <a class="top-list" href="#">- </a>
+                            <a class="top-list" href="#">- </a>
+                            <a class="top-list" href="#">- </a>
+                            <a class="top-list" href="#">- </a>
+                            <a class="top-list" href="#">- </a>
+                        </div>
+                    </div>
+                </div>
+                
             </div>
         </div>
        
