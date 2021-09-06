@@ -50,10 +50,17 @@
         </div>
         <div class="screen">
             <div class="chat">
-                <div class="chat-body" id="chat-body"></div>
+                <div style="font-size: 100px;">
+                    &#127984;
+                </div>
+                <div>
+                    <p id="atk-info">Select an empty land to buy or select your land to attack</p>
+                    <button onclick="buyOrAttack(this.innerText)" id="buy-atk-but" disabled>Buy</button>
+                </div>
+                <!-- <div class="chat-body" id="chat-body"></div>
                 <div class="chat-tb-div">
                     <input type="text" id="chat-tb" class="form-control" aria-describedby="emailHelp" placeholder="Type here">
-                </div>
+                </div> -->
             </div>
             <div class="canvas-div">
                 <canvas id="canvas-map" class="map" width="499" height="499"></canvas>

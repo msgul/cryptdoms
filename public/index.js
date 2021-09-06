@@ -12,6 +12,8 @@ var cre_kg = document.getElementById("create-kingdom");
 var cur_kg = document.getElementById("current-kingdom");
 var chat_tb = document.getElementById("chat-tb");
 var chat_bd = document.getElementById("chat-body");
+var buy_atk = document.getElementById("buy-atk-but");
+var atk_info = document.getElementById("atk-info");
 var currentAccount;
 const map_size = 100;
 var currentKingdom;
@@ -19,6 +21,7 @@ var adrToKingdom = [];
 var map;
 var attackMode = false;
 var attackerLand;
+var land_index;
 
 const socket = io();
 
@@ -46,6 +49,7 @@ async function startApp(contract_abi, contract_adr){
     await displayMap();
 }
 
+/*
 chat_tb.onkeydown = function(e) {
     if (e.key === 'Enter' || e.keyCode === 13) {
         if(chat_tb.value != ""){
@@ -54,7 +58,7 @@ chat_tb.onkeydown = function(e) {
         }
         
     }
-};
+};*/
 
 async function handleAccountsChanged(accounts) {
     if (accounts.length === 0) {
@@ -124,20 +128,39 @@ async function displayMap(){
     await getKingdomList(map[0]);
 }
 
-async function drawMap(map){
+async function drawMap(map, selected1, selected2){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    console.log(selected1,selected2)
     let id = 0; 
     for(i=0;i<10;i++){
         for(j=0;j<10;j++){
             if(map[id].isCreated != 0)
                 ctx.fillStyle = "rgba(" + map[id].r + "," + map[id].g + "," + map[id].b +",0.7)";
             else
-                ctx.fillStyle = "rgb(190,190,190)";
+                ctx.fillStyle = "rgba(190,190,190,1)";
             ctx.fillRect(j*50, i*50, 49, 49);
+
+            if(i*10+j == selected1){
+                ctx.beginPath();
+                ctx.lineWidth = 5;
+                console.log(selected1);
+                ctx.rect(j*50+2, i*50+2, 45, 45);
+                ctx.strokeStyle = "green";
+                ctx.stroke();
+            }
+            if(i*10 + j == selected2){
+                ctx.beginPath();
+                ctx.lineWidth = 5;
+                console.log(selected1);
+                ctx.rect(j*50+2, i*50+2, 45, 45);
+                ctx.strokeStyle = "red";
+                ctx.stroke();
+            }
+
             id++;
         }
     }
-
 }
 
 async function getKingdomList(map){
@@ -213,23 +236,32 @@ async function getCursorPosition(canvas, event) {
 
     land_index = Math.floor(x/50) + Math.floor(y/50)*10;
 
+
     if(map[1][land_index].isCreated == 0){
         if(currentKingdom.isCreated){
-            receipt = await buyLand(land_index,currentKingdom.kingdomName,currentKingdom.r,currentKingdom.g,currentKingdom.b);
-            console.log(receipt);
-            alert("Land bought! Tx Hash: " + receipt.transactionHash);
+            await drawMap(map[1],land_index);
+            buy_atk.innerText = "Buy";
+            buy_atk.disabled = false;
+            atk_info.innerText = "Buy this land for only 0.01 ETH";
         }
         else
-            prompt("Please create a kingdom!");
+            alert("Please create a kingdom!");
     } else {
         if(map[0][land_index].toLowerCase() == currentAccount){
+            await drawMap(map[1],land_index);
             attackMode = true;
             attackerLand = land_index;
             console.log("Attacking from",attackerLand);
+            buy_atk.innerText = "Attack";
+            buy_atk.disabled = true;
+            atk_info.innerText = "Choose a neighbour enemy land to attack!";
         } 
-        else if(attackMode){
+        else if(attackMode && isNeighbour(attackerLand,land_index)){
+            await drawMap(map[1], attackerLand, land_index);
             console.log("Attacking",land_index);
-            console.log(await attackLand(attackerLand, land_index));
+            buy_atk.disabled = false;
+            atk_info.innerText = "Attack enemy land\n(Change of winning: 55%)"
+            //console.log(await attackLand(attackerLand, land_index));
         }
     }
     // other cases will be added
@@ -262,4 +294,26 @@ function getColors() {
     colors.push(parseInt(color.substr(3,2), 16));
     colors.push(parseInt(color.substr(5,2), 16));
     return colors;
+}
+
+async function buyOrAttack(action){
+    if(action == "Buy"){
+        receipt = await buyLand(land_index,currentKingdom.kingdomName,currentKingdom.r,currentKingdom.g,currentKingdom.b);
+        alert("Land bought! Tx Hash: " + receipt.transactionHash);
+    }else{
+        console.log(await attackLand(attackerLand, land_index));
+    }
+}
+
+function isNeighbour(p1, p2) {
+    if(p1 == p2 + 1 && p1 % 10 != 0)
+        return true;
+    if(p2 > 0 && p1 == p2 - 1 && p2 % 10 != 0)
+        return true;
+    if(p2 >= 10 && p1 == p2 - 10)
+        return true;
+    if(p1 >= 10 && p2 == p1 - 10)
+        return true;
+
+    return false;
 }
