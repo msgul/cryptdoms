@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <title>Cryptdom</title>
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -67,13 +67,6 @@
                         <p id="atk-info">Select an empty land to buy or select your land to attack</p>
                         <button type="button" class="btn btn-primary" onclick="buyOrAttack(this.innerText)" id="buy-atk-but" disabled>Buy</button>
                     </div>
-
-                    <div class="card-body">
-                        <div class="alert alert-primary" role="alert" style="display: none;" id="result">
-                            A simple primary alert—check it out!
-                          </div>
-                    </div>
-
                     <!-- <div class="card-footer">Tx:hash</div> -->
                 </div>
 
@@ -112,7 +105,6 @@
         </div>
        
     </div>
-
 
     <script src="contract_abi.js"></script>
     <script src="index.js"></script>

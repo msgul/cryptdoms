@@ -119,7 +119,7 @@ async function connectWeb3(contract_abi, contract_adr) {
 
 async function displayMap(){
     map = await cryptdom.methods.viewMap().call();
-    await drawMap(map[1]);
+    await drawMap(map);
     
 
     for(i=0;i<map_size;i++){
@@ -133,17 +133,16 @@ async function displayMap(){
 async function drawMap(map, selected1, selected2){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    console.log(selected1,selected2)
     let id = 0; 
     for(i=0;i<10;i++){
         for(j=0;j<10;j++){
-            if(map[id].isCreated != 0)
-                ctx.fillStyle = "rgba(" + map[id].r + "," + map[id].g + "," + map[id].b +",0.7)";
+            if(map[1][id].isCreated != 0)
+                ctx.fillStyle = "rgba(" + map[1][id].r + "," + map[1][id].g + "," + map[1][id].b +",0.7)";
             else
                 ctx.fillStyle = "rgba(210,210,210,1)";
             ctx.fillRect(j*50, i*50, 49, 49);
 
-            if(i*10+j == selected1){
+            if(id == selected1){
                 ctx.beginPath();
                 ctx.lineWidth = 5;
                 ctx.rect(j*50+2, i*50+2, 45, 45);
@@ -152,7 +151,8 @@ async function drawMap(map, selected1, selected2){
                 ctx.font = "20px Arial";
                 ctx.fillText("📍", j*50+17, i*50+32);
             }
-            if(i*10 + j == selected2){
+
+            if(id == selected2){
                 ctx.beginPath();
                 ctx.lineWidth = 5;
                 ctx.rect(j*50+2, i*50+2, 45, 45);
@@ -161,10 +161,15 @@ async function drawMap(map, selected1, selected2){
 
                 ctx.font = "20px Arial";
                 ctx.fillText("⚔️", j*50+11, i*50+32);
-                
             }
 
-            
+            if(isNeighbour(selected1,id) && !selected2 && map[0][selected1] != map[0][id] && map[0][id]!=0 && map[0][selected1] != 0){
+                ctx.beginPath();
+                ctx.lineWidth = 5;
+                ctx.rect(j*50+2, i*50+2, 45, 45);
+                ctx.strokeStyle = "rgba(70,70,200,0.8)"
+                ctx.stroke();
+            }
 
             id++;
         }
@@ -214,10 +219,7 @@ async function getKingdomList(map){
             top_list_a[i].style.backgroundColor = "rgba("+r+","+g+","+b+",0.31)";
 
             top_list_a[i].appendChild(span);
-
-
         }
-        
     }
 }
 
@@ -245,10 +247,9 @@ async function getCursorPosition(canvas, event) {
 
     land_index = Math.floor(x/50) + Math.floor(y/50)*10;
 
-
     if(map[1][land_index].isCreated == 0){
         if(currentKingdom.isCreated){
-            await drawMap(map[1],land_index);
+            await drawMap(map,land_index);
             buy_atk.innerText = "Buy";
             buy_atk.disabled = false;
             atk_info.innerText = "Buy this land for only 0.01 ETH";
@@ -259,7 +260,7 @@ async function getCursorPosition(canvas, event) {
             alert("Please create a kingdom!");
     } else {
         if(map[0][land_index].toLowerCase() == currentAccount){
-            await drawMap(map[1],land_index);
+            await drawMap(map,land_index);
             attackMode = true;
             attackerLand = land_index;
             console.log("Attacking from",attackerLand);
@@ -269,7 +270,7 @@ async function getCursorPosition(canvas, event) {
             atk_info.innerText = "Select a neighbour land to attack!";
         } 
         else if(attackMode && isNeighbour(attackerLand,land_index)){
-            await drawMap(map[1], attackerLand, land_index);
+            await drawMap(map, attackerLand, land_index);
             console.log("Attacking",land_index);
             buy_atk.disabled = false;
             atk_info.innerText = "Attack enemy land\n(Change of winning: 55%)"
@@ -320,6 +321,7 @@ async function buyOrAttack(action){
 
     buy_atk.disabled = true;
     atk_info.innerText="Select an empty land to buy or select your land to attack";
+    attackMode = false;
 }
 
 function isNeighbour(p1, p2) {
