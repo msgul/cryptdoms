@@ -26,7 +26,6 @@
 .chat-body{
     text-align: left;
     height: 13em;
-    display: flex;
     padding: 2%;
     word-wrap: break-word;
     overflow-y: scroll;

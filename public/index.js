@@ -35,7 +35,7 @@ socket.on('connect', () => {
     });
 
     socket.on('message', (sender,msg) => {
-        chat_bd.innerText += sender + ": " + msg + "\n";
+        chat_bd.innerHTML += "<b>" + sender + "</b>: " + msg + "<br>";
         chat_bd.scrollTop = chat_bd.scrollHeight;
     });
 });
